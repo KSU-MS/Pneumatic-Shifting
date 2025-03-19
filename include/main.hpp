@@ -2,17 +2,17 @@
 uint16_t Paddle_Value;
 uint16_t Launch_Value;
 //Output Pins
-#define LAUNCH_CONTROL 19
-#define NO_LIFT_SHIFT 20
-#define UP_PIN 21
-#define DOWN_PIN 22
-#define CLUTCH_PIN 23
+#define LAUNCH_CONTROL 10
+#define NO_LIFT_SHIFT 11
+#define UP_PIN 7
+#define DOWN_PIN 8
+#define CLUTCH_PIN 9
 //Input Signals
-#define PADDLE_SIGNAL 14
-#define LAUNCH_BUTTON_SIGNAL 15
-#define UP_SIGNAL 16
-#define DOWN_SIGNAL 17
-#define NEUTRAL_SIGNAL 18
+#define PADDLE_SIGNAL 23
+#define LAUNCH_BUTTON_SIGNAL 22
+//#define UP_SIGNAL 16 NOT DEFINED ON PREVIOUS BOARD
+//#define DOWN_SIGNAL 17 NOT DEFINED ON PREVIOUS BOARD
+//#define NEUTRAL_SIGNAL 18 NOT DEFINED ON PREVIOUS BOARD
 
 class PS3 {
 
