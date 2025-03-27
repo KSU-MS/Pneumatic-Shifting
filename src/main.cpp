@@ -15,7 +15,6 @@ void loop() {
   // Button Reads
   Paddle_Value = analogRead(PADDLE_SIGNAL);
   Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
-  delay(200);
   Serial.printf("Paddle fella: %d\r\n", Paddle_Value);
   Serial.printf("Launch fella: %d\r\n", Launch_Value);
 
