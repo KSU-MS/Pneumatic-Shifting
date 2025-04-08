@@ -9,14 +9,24 @@ void setup() {
   pinMode(CLUTCH_PIN, OUTPUT);
 
   pneumaticMain.pinReset(); // Sets all pins to low
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+
+  Serial.begin(9600);
 }
+
+uint16_t last_padddle = 0;
 
 void loop() {
   // Button Reads
   Paddle_Value = analogRead(PADDLE_SIGNAL);
   Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
-  Serial.printf("Paddle fella: %d\r\n", Paddle_Value);
-  Serial.printf("Launch fella: %d\r\n", Launch_Value);
+
+  if (Paddle_Value < 130) {
+    delay(5);
+    Paddle_Value = analogRead(PADDLE_SIGNAL);
+  }
 
   if (Launch_Value > 115 &&
       Launch_Value < 126 /*Calculated Launch Button Voltages*/) {
@@ -43,8 +53,8 @@ void loop() {
              Paddle_Value < 106 /*Calculated Left Paddle Voltages*/) {
     pneumaticMain.downShift();
 
-    pneumaticMain
-        .pinReset(); // Resets the pins again to prevent constant down shifting
+    // Resets the pins again to prevent constant down shifting
+    pneumaticMain.pinReset();
     while (Paddle_Value > 96 && Paddle_Value < 106) {
       Paddle_Value = analogRead(PADDLE_SIGNAL);
       Serial.println("Left Paddle is being held");
