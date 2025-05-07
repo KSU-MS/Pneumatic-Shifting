@@ -2,67 +2,80 @@
 PS3 pneumaticMain;
 
 void setup() {
+  Serial.begin(9600);
+
   pinMode(UP_PIN, OUTPUT);
   pinMode(NO_LIFT_SHIFT, OUTPUT);
   pinMode(LAUNCH_CONTROL, OUTPUT);
   pinMode(DOWN_PIN, OUTPUT);
   pinMode(CLUTCH_PIN, OUTPUT);
 
+  pinMode(PADDLE_SIGNAL, INPUT);
+  pinMode(LAUNCH_BUTTON_SIGNAL, INPUT);
+
   pneumaticMain.pinReset(); // Sets all pins to low
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
-
-  Serial.begin(9600);
 }
 
-uint16_t last_padddle = 0;
-
 void loop() {
+  digitalWrite(LED_BUILTIN, CHANGE);
+
   // Button Reads
   Paddle_Value = analogRead(PADDLE_SIGNAL);
   Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
 
-  if (Paddle_Value < 130) {
-    delay(5);
+  // Give the circuit time to settle to avoid resistor bounce
+  if (Paddle_Value < 900) {
+    delay(1);
     Paddle_Value = analogRead(PADDLE_SIGNAL);
   }
 
-  if (Launch_Value > 115 &&
-      Launch_Value < 126 /*Calculated Launch Button Voltages*/) {
+  // Launch case
+  if (Launch_Value < 900) {
     pneumaticMain.launchStateActive();
-    while (Launch_Value > 115 && Launch_Value < 126) {
+
+    // Wait for the driver to release the button
+    while (Launch_Value < 900) {
       Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
       Serial.println("Launch Button is being held");
-      delay(1); // Waiting to prevent sending too many messages
     }
     Serial.println("Launch Button Released");
+
     pneumaticMain.launchStateDisengage();
-  } else if (Paddle_Value > 108 &&
-             Paddle_Value < 117) { // Calculated Right Paddle Voltages
+  }
+
+  // Upshift case
+  else if (Paddle_Value > 770 && Paddle_Value < 790) {
     pneumaticMain.upShift();
-    pneumaticMain
-        .pinReset(); // Resets the pins again to prevent constant up shifting
-    while (Paddle_Value > 108 && Paddle_Value < 117) {
+
+    // Reset the pins again to prevent constant up shifting
+    pneumaticMain.pinReset();
+
+    // Prevent multiple shifts from holding the paddle
+    while (Paddle_Value < 900) {
       Paddle_Value = analogRead(PADDLE_SIGNAL);
       Serial.println("Right Paddle is being held");
-      delay(1); // Waiting to prevent sending too many messages
     }
     Serial.println("Right Paddle Released");
-  } else if (Paddle_Value > 96 &&
-             Paddle_Value < 106 /*Calculated Left Paddle Voltages*/) {
+  }
+
+  // Downshift case
+  else if (Paddle_Value > 690 && Paddle_Value < 710) {
     pneumaticMain.downShift();
 
-    // Resets the pins again to prevent constant down shifting
+    // Reset the pins again to prevent constant down shifting
     pneumaticMain.pinReset();
-    while (Paddle_Value > 96 && Paddle_Value < 106) {
+
+    // Prevent multiple shifts from holding the paddle
+    while (Paddle_Value < 900) {
       Paddle_Value = analogRead(PADDLE_SIGNAL);
       Serial.println("Left Paddle is being held");
-      delay(1); // Waiting to prevent sending too many messages
     }
     Serial.println("Left Paddle Released");
-  } else {
-    pneumaticMain.pinReset(); // Safety Guard
   }
-  pneumaticMain.pinReset(); // Extra Safety Guard
+
+  // Catch case
+  pneumaticMain.pinReset();
 }
