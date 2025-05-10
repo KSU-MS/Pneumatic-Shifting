@@ -20,24 +20,30 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN, CHANGE);
+  digitalToggle(LED_BUILTIN);
 
   // Button Reads
   Paddle_Value = analogRead(PADDLE_SIGNAL);
   Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
 
+  Serial.printf("Paddle_Value: %i\n", Paddle_Value);
+  Serial.printf("Launch_Value: %i\n", Launch_Value);
+
   // Give the circuit time to settle to avoid resistor bounce
-  if (Paddle_Value < 900) {
-    delay(1);
+  if (Paddle_Value < 900 || Launch_Value < 900) {
+    delay(5);
     Paddle_Value = analogRead(PADDLE_SIGNAL);
+    Serial.printf("Paddle_Value evil: %i\n", Paddle_Value);
+    Serial.printf("Launch_Value evil: %i\n", Launch_Value);
   }
 
   // Launch case
-  if (Launch_Value < 900) {
+  if (Launch_Value > 820 && Launch_Value < 860) {
     pneumaticMain.launchStateActive();
 
     // Wait for the driver to release the button
-    while (Launch_Value < 900) {
+    while (Launch_Value > 820 && Launch_Value < 860) {
+      delay(5);
       Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
       Serial.println("Launch Button is being held");
     }
@@ -55,6 +61,7 @@ void loop() {
 
     // Prevent multiple shifts from holding the paddle
     while (Paddle_Value < 900) {
+      delay(5);
       Paddle_Value = analogRead(PADDLE_SIGNAL);
       Serial.println("Right Paddle is being held");
     }
@@ -70,6 +77,7 @@ void loop() {
 
     // Prevent multiple shifts from holding the paddle
     while (Paddle_Value < 900) {
+      delay(5);
       Paddle_Value = analogRead(PADDLE_SIGNAL);
       Serial.println("Left Paddle is being held");
     }
