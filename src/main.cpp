@@ -33,6 +33,7 @@ void loop() {
   if (Paddle_Value < 900 || Launch_Value < 900) {
     delay(5);
     Paddle_Value = analogRead(PADDLE_SIGNAL);
+    Launch_Value = analogRead(LAUNCH_BUTTON_SIGNAL);
     Serial.printf("Paddle_Value evil: %i\n", Paddle_Value);
     Serial.printf("Launch_Value evil: %i\n", Launch_Value);
   }

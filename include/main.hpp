@@ -21,18 +21,19 @@ class PS3 {
 public:
   void upShift() {
     digitalWrite(NO_LIFT_SHIFT, HIGH);
+    delay(50); // Delay to give ECU time to spark cut
     digitalWrite(UP_PIN, HIGH);
-    delay(100); // Delay to allow up cylinder to reach height
+    delay(150); // Delay to allow up cylinder to reach height
   }
 
   void downShift() {
     digitalWrite(CLUTCH_PIN, HIGH);
     digitalWrite(LAUNCH_CONTROL, HIGH);
-    delay(100); // Delay to allow clutch pin to reach height
+    delay(150); // Delay to allow clutch pin to reach height
     digitalWrite(DOWN_PIN, HIGH);
-    delay(100); // Delay to allow down cylinder to reach height
+    delay(150); // Delay to allow down cylinder to reach height
     digitalWrite(CLUTCH_PIN, LOW);
-    delay(100); // Delay to allow clutch to drop
+    delay(150); // Delay to allow clutch to drop
     digitalWrite(LAUNCH_CONTROL, LOW);
   }
 
